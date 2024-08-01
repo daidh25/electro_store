@@ -1,0 +1,226 @@
+﻿@model IEnumerable<eShopSolution.ViewModels.Catalog.Products.ProductViewModel>
+@{
+    ViewData["Title"] = "Admin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script src="/assets/demo/chart-area-demo.js"></script>
+    <script src="/assets/demo/chart-bar-demo.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+    <script src="/assets/demo/datatables-demo.js"></script>
+}
+<div class="container-fluid">
+    <h1 class="mt-4">Bảng thống kê</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Dashboard</li>
+    </ol>
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">Products</div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="#"><div>Products: @ViewBag.TotalStock</div></a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">Customner</div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="#"><div>User: @ViewBag.countusers</div></a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">Oder</div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="#"><div>Order: @ViewBag.countoders</div></a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-danger text-white mb-4">
+                <div class="card-body">total revenue</div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="#"><div>Totalrevenue: @ViewBag.totalrevenue VNĐ</div></a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <h1 style="text-align: center;">DIAGRAMS</h1>
+    <form asp-action="Index" asp-controller="Home" method="post">
+        <input type="date" name="startDate" id="start" />
+        <input type="date" name="endDate" id="end" />
+        <button type="submit">Lọc</button>
+    </form>
+  
+
+    <div style="display: flex; justify-content: space-between;">
+        <div style="width: 45%;">
+            <h2 style="text-align: center;">Số lượng tồn theo sản phẩm </h2>
+            <canvas id="myChart1" style="width: 100%; height: auto;"></canvas>
+        </div>
+        <div style="width: 45%;">
+            <h2 style="text-align: center;">Tổng số lượng hàng tồn theo danh mục</h2>
+            <canvas id="myChart2" style="width: 100%; height: auto;"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Khai báo mảng để lưu trữ dữ liệu stock từ mỗi sản phẩm
+        var stockData1 = [];
+        var productIds1 = [];
+
+        var stockData2 = [];
+        var productIds2 = [];
+
+        // Lặp qua mỗi sản phẩm trong ViewBag.Products và trích xuất dữ liệu stock
+        @foreach (var item in ViewBag.Products)
+        {
+            <text>
+                productIds1.push('@item.Name');
+            stockData1.push('@item.Stock');
+            </text>
+        }
+
+            // Lặp qua mỗi danh mục trong ViewBag.StockByCategory và trích xuất dữ liệu stock
+        @foreach (var item in ViewBag.StockByCategory)
+        {
+            <text>
+                productIds2.push('@item.CategoryId');
+            stockData2.push('@item.TotalStock');
+            </text>
+        }
+
+                // Khởi tạo biểu đồ 1 với dữ liệu đã trích xuất
+                const ctx1 = document.getElementById('myChart1');
+
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                // Đặt nhãn là ID của các sản phẩm
+                labels: productIds1,
+                datasets: [{
+                    label: 'Số lượng tồn',
+                    // Sử dụng dữ liệu stock đã trích xuất
+                    data: stockData1,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Khởi tạo biểu đồ 2 với dữ liệu đã trích xuất
+        const ctx2 = document.getElementById('myChart2');
+
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                // Đặt nhãn là ID của các danh mục
+                labels: productIds2,
+                datasets: [{
+                    label: 'Tổng số lượng hàng tồn kho theo danh mục',
+                    // Sử dụng dữ liệu stock đã trích xuất
+                    data: stockData2,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+
+</div>
+<div>
+    <div style="width: 45%; margin: 0 auto; text-align: center;">
+        <h2>Thống kê doanh thu</h2>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <canvas id="myChart3" width="400" height="400"></canvas>
+    <script>
+        // Khởi tạo mảng productIds1 và stockData1
+        var productIds1 = [];
+        var stockData1 = [];
+
+        // Lặp qua mỗi cặp ngày và giá trị trong ViewBag.DateValuePairs và trích xuất dữ liệu
+        @foreach (var pair in ViewBag.DateValuePairs)
+        {
+            <text>
+                                var value = parseFloat('@pair.Item2');
+            if (!isNaN(value)) {
+                value = Math.round(value * 100) / 100;
+            }
+            // Thêm ngày vào mảng productIds1
+            productIds1.push('@pair.Item1');
+            // Thêm giá trị vào mảng stockData1
+            stockData1.push(value);
+            </text>
+        }
+    </script>
+
+    <script>
+                // Dữ liệu mẫu
+
+
+
+
+                // Khởi tạo biểu đồ
+                const ctx3 = document.getElementById('myChart3').getContext('2d');
+        const myChart3 = new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: productIds1, // Nhãn là ID của sản phẩm
+                datasets: [{
+                    label: 'Doanh thu', // Nhãn cho dữ liệu
+                    data: stockData1, // Dữ liệu số lượng tồn
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true, // Bắt đầu trục y từ giá trị 0
+                        ticks: {
+                            stepSize: 1 // Bước nhảy của các giá trị trục y
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</div>

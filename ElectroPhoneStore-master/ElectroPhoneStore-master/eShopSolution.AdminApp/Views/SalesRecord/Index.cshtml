@@ -1,0 +1,45 @@
+﻿@using eShopSolution.ViewModels.Common;
+@model PagedResult<eShopSolution.ViewModels.Catalog.Products.ProductViewModel>
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@{
+    ViewData["Title"] = "Danh sách sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th class="text-center">
+                ID
+            </th>
+            <th class="text-center">
+                Ảnh đại diện
+            </th>
+            <th>
+                Tên
+            </th>
+            <th class="text-center">
+                Giá bán
+            </th>
+            <th class="text-center">
+                Số lượng tồn
+            </th>
+            <th class="text-center">
+                Thao tác
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+         
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => item.Stock)
+                </td>
+           
+            </tr>
+        }
+    </tbody>
+</table>
